@@ -1,0 +1,75 @@
+{
+  "name": "dsh-pack-maker",
+  "description": "DeepSeek Harness integration-pack tool: export and import portable .dshpack profile bundles from inside DSH.",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./core": {
+      "types": "./lib/types/core.d.ts",
+      "default": "./lib/core.js"
+    },
+    "./cmdline": "./lib/cmdline.js",
+    "./client": "./client/client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "bin",
+    "src",
+    "client",
+    "cordis.patch.yml",
+    "README.md",
+    "README.zh.md",
+    "LICENSE"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "deepseek",
+    "harness",
+    "dsh",
+    "dsh-plugin",
+    "profile",
+    "pack",
+    "export",
+    "import",
+    "integration-pack"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-client-connection",
+        "@deepseek-ai/dsh-client-runtime",
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-settings",
+        "@deepseek-ai/dsh-client-ui-theme"
+      ],
+      "platform": "web"
+    }
+  },
+  "scripts": {
+    "build:client": "node scripts/build-client.mjs",
+    "prepack": "npm run build:client",
+    "test": "node --test test/*.test.mjs"
+  },
+  "bin": {
+    "dsh-pack": "bin/dsh-pack.js"
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh-cmdline": "^0.1.0-rc.6",
+    "commander": "^15.0.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.12",
+    "react": "^19.2.8"
+  }
+}

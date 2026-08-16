@@ -1,0 +1,18 @@
+# dsh-pack-maker bundle patch.
+# Installing this package with `dsh plugin --profile <name> add dsh-pack-maker`
+# appends it to the profile's bundle stack and these rows mount the pack tool:
+#   - pack-maker        the host plugin (tools, commands, /dsh-pack/* routes)
+#   - pack-maker-cmdline  the `dsh web pack ...` command family
+- insert:
+    - id: pack-maker
+      name: 'dsh-pack-maker'
+      config:
+        # Where exported .dshpack files go by default. Relative paths are
+        # resolved against the workspace root where dsh was launched.
+        outputDir: '.dshpacks'
+        # Whether import should run `pnpm install` automatically.
+        autoInstall: true
+
+    - id: pack-maker-cmdline
+      name: 'dsh-pack-maker/cmdline'
+      inject: [cmdlineArgs]
