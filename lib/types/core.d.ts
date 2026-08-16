@@ -16,6 +16,15 @@ export interface DshPack {
   format: 'dsh-pack/1';
   meta: PackMeta;
   files: Record<string, PackFileRecord>;
+  checksum?: string;
+}
+
+export interface PackSummary {
+  format: string;
+  meta: PackMeta;
+  bundles: string[];
+  dependencies: Record<string, string>;
+  fileCount: number;
 }
 
 export interface BuildPackOptions {
@@ -57,6 +66,8 @@ export declare const DEFAULT_OUTPUT_DIR: '.dshpacks';
 export declare function buildPack(options: BuildPackOptions): Promise<Buffer>;
 export declare function exportPack(options: BuildPackOptions): Promise<ExportResult>;
 export declare function parsePack(buffer: Buffer): DshPack;
+export declare function canonicalJson(pack: DshPack): string;
+export declare function summarizePack(buffer: Buffer): Promise<PackSummary>;
 export declare function importPack(options: {
   buffer: Buffer;
   profileName?: string;
