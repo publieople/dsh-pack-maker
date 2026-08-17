@@ -1,7 +1,7 @@
 {
   "name": "dsh-pack-maker",
   "description": "DeepSeek Harness integration-pack tool: export and import portable .dshpack profile bundles from inside DSH.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "main": "lib/index.js",
   "types": "lib/types/index.d.ts",
