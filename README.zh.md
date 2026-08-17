@@ -48,6 +48,8 @@ dsh web pack list
 dsh web pack info ./backup.dshpack
 ```
 
+> 说明:web app 独占 `dsh web` 的参数族,所以 pack 命令输出旁边会出现一行 web app 自己打印的 `error: too many arguments` 提示;命令本身照常执行并以 0 退出。写脚本时建议用下面的独立 `dsh-pack` CLI,它没有这个共存问题。
+
 ### 独立 CLI
 
 包内附带一个零依赖的小 CLI：

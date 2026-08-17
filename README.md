@@ -48,6 +48,11 @@ dsh web pack list
 dsh web pack info ./backup.dshpack
 ```
 
+> Note: the web app owns the `dsh web` argument family, so alongside the pack
+> output you will see one `error: too many arguments` line printed by the web
+> app's own parser; the command still runs and exits 0. For scripting, use the
+> standalone `dsh-pack` CLI below, which has no such coexistence issue.
+
 ### Standalone CLI
 
 The package ships a small dependency-free CLI:
