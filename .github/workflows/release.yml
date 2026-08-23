@@ -11,6 +11,7 @@ permissions:
 jobs:
   release:
     name: Build & publish release
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
