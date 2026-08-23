@@ -7,6 +7,7 @@ export interface ProfilePackConfig {
   outputDir?: string;
   autoInstall?: boolean;
   overwrite?: boolean;
+  marketRegistry?: string;
 }
 
 export interface ToolLike {

@@ -12,6 +12,9 @@
         outputDir: '.dshpacks'
         # Whether import should run `pnpm install` automatically.
         autoInstall: true
+        # Optional remote pack-market index. Empty / unset falls back to the
+        # DSCPACK_REGISTRY_URL env var, then to a local-only scan.
+        marketRegistry: ''
 
     - id: pack-maker-cmdline
       name: 'dsh-pack-maker/cmdline'

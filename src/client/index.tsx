@@ -274,6 +274,116 @@ function PackMakerSection({ t }) {
     ),
 
     error && React.createElement('div', { style: errorStyle }, `${t('error')}: ${error}`),
+    React.createElement(MarketCard, { t }),
+  );
+}
+
+function MarketCard({ t }) {
+  const [items, setItems] = React.useState([]);
+  const [query, setQuery] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState('');
+  const [preview, setPreview] = React.useState(null);
+  const [importing, setImporting] = React.useState(false);
+  const [importResult, setImportResult] = React.useState(null);
+
+  async function load(query) {
+    setError(''); setPreview(null); setImportResult(null); setLoading(true);
+    try {
+      const res = await fetch(`/dsh-pack/market?query=${encodeURIComponent(query)}`, { cache: 'no-store' });
+      const body = await res.json();
+      if (!body?.ok) throw new Error(body?.error || 'market failed');
+      setItems(body.items ?? []);
+      if (body.errors?.length) setError(body.errors.map((entry) => entry.message).join('; '));
+    } catch (cause) {
+      setError(String(cause instanceof Error ? cause.message : cause));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  React.useEffect(() => { load(''); }, []);
+
+  async function previewItem(item) {
+    setError(''); setPreview(null); setImportResult(null);
+    try {
+      const res = await fetch('/dsh-pack/market/preview', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ source: item.source, path: item.path, url: item.url }),
+      });
+      const body = await res.json();
+      if (!body?.ok) throw new Error(body?.error || 'preview failed');
+      setPreview({ item, summary: body.summary });
+    } catch (cause) {
+      setError(String(cause instanceof Error ? cause.message : cause));
+    }
+  }
+
+  async function importItem(item) {
+    setError(''); setImportResult(null); setImporting(true);
+    try {
+      const params = new URLSearchParams({ profileName: item.name, overwrite: 'false' });
+      const res = await fetch(`/dsh-pack/market/import?${params.toString()}`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ source: item.source, path: item.path, url: item.url }),
+      });
+      const body = await res.json();
+      if (!body?.ok) throw new Error(body?.error || 'import failed');
+      setImportResult(body.result);
+    } catch (cause) {
+      setError(String(cause instanceof Error ? cause.message : cause));
+    } finally {
+      setImporting(false);
+    }
+  }
+
+  return React.createElement(
+    'div',
+    { style: cardStyle },
+    React.createElement('h3', { style: titleStyle }, t('marketTitle')),
+    React.createElement('p', { style: hintStyle }, t('marketHint')),
+    React.createElement(
+      'div',
+      { style: rowStyle },
+      React.createElement('input', {
+        value: query,
+        onChange: (e) => setQuery(e.target.value),
+        placeholder: t('marketSearch'),
+        style: { flex: 1, padding: '4px 8px', fontSize: 13 },
+      }),
+      React.createElement('button', { onClick: () => load(query), disabled: loading, style: buttonStyle }, t('marketSearchBtn')),
+    ),
+    loading && React.createElement('p', { style: hintStyle }, t('marketLoading')),
+    error && React.createElement('div', { style: errorStyle }, error),
+    !loading && items.length === 0 && React.createElement('p', { style: hintStyle }, t('marketEmpty')),
+    items.map((item) =>
+      React.createElement(
+        'div',
+        { key: `${item.source}:${item.name}`, style: { marginTop: 8, fontSize: 13 } },
+        React.createElement('div', null,
+          `${item.name}${item.title && item.title !== item.name ? ` — ${item.title}` : ''} [${item.source}]${item.version && item.version !== 'unknown' ? ` v${item.version}` : ''}`),
+        item.description && React.createElement('div', { style: hintStyle }, item.description),
+        React.createElement(
+          'div',
+          { style: rowStyle },
+          React.createElement('button', { onClick: () => previewItem(item), style: buttonStyle }, t('marketPreview')),
+          React.createElement(
+            'button',
+            { onClick: () => importItem(item), disabled: importing, style: primaryStyle },
+            importing ? t('importing') : t('marketImport'),
+          ),
+        ),
+      ),
+    ),
+    preview && React.createElement('div', { style: { marginTop: 10, fontSize: 13 } },
+      `${t('packBundles')}: ${preview.summary?.bundles?.length ?? 0}`,
+      Object.keys(preview.summary?.dependencies ?? {}).length > 0
+        ? ` · ${t('packDeps')}: ${Object.entries(preview.summary?.dependencies ?? {}).map(([dep, spec]) => `${dep}@${spec}`).join(', ')}`
+        : null,
+    ),
+    importResult && React.createElement('div', { style: okStyle }, `${importResult.profile} → ${importResult.dir}`),
   );
 }
 

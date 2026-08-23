@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test & build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [22]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build client bundle
+        run: npm run build:client
+
+      - name: Verify pack contents
+        run: |
+          npm pack --dry-run --json > /tmp/pack.json
+          node -e "const d=JSON.parse(require('fs').readFileSync('/tmp/pack.json','utf8')); const entry=Array.isArray(d)?d[0]:d[Object.keys(d)[0]]; const files=(entry&&entry.files?entry.files:[]).map(f=>f.path); console.log(files.join('\n')); const need=['lib/core.js','lib/check.js','lib/market.js','lib/index.js','lib/cmdline.js','lib/routes.js','bin/dsh-pack.js','cordis.patch.yml']; const missing=need.filter(p=>!files.includes(p)); if(missing.length){console.error('missing from pack:',missing); process.exit(1);}"
