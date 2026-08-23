@@ -23,7 +23,7 @@ Share ready-made DSH setups in one file: base profile configuration, user `cordi
 From any initialized profile, install the tarball from the latest [GitHub Release](https://github.com/publieople/dsh-pack-maker/releases):
 
 ```sh
-dsh plugin --profile web add https://github.com/publieople/dsh-pack-maker/releases/latest/download/dsh-pack-maker-0.1.3.tgz
+dsh plugin --profile web add https://github.com/publieople/dsh-pack-maker/releases/latest/download/dsh-pack-maker-0.1.4.tgz
 ```
 
 or, from a local checkout:
